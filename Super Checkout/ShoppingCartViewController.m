@@ -205,10 +205,11 @@
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"An error occurred adding this item" delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil];
 	
 	[alert show];
+    [alert release];
 }
 
 -(void) cartContentsReceived:(NSDictionary *)cart forRequest:(NSString *)connectionIdentifier {
-	shoppingCart = cart;
+	shoppingCart = [cart retain];
 	
 	NSNotification *note = [NSNotification notificationWithName:@"CartUpdated" object:[NSNumber numberWithInt:[[shoppingCart objectForKey:@"items"] count]]];
 	

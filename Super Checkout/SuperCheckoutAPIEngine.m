@@ -166,14 +166,7 @@
                                            path:(NSString *)path 
                                     requestType:(SuperCheckoutRequestType)requestType 
                                 queryParameters:(NSDictionary *)params
-{
-	NSString *contentType = [params objectForKey:@"Content-Type"];
-	if(contentType){
-		params = [params MGTE_dictionaryByRemovingObjectForKey:@"Content-Type"];
-	}else{
-		contentType = @"application/x-www-form-urlencoded";
-	}
-	
+{	
     // Construct appropriate URL string.
     NSString *fullPath = [path stringByAddingPercentEscapesUsingEncoding:NSNonLossyASCIIStringEncoding];
     if (params && ![method isEqualToString:HTTP_POST_METHOD]) {

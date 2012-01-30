@@ -31,6 +31,8 @@
 
 - (void)dealloc
 {
+    [apiEngine setDelegate:nil];
+    [apiEngine release];
 	[selectedProduct release];
 	[productDetailsHeader release];
 	[productImage release];
@@ -122,6 +124,7 @@
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"An error occurred adding this item" delegate:nil cancelButtonTitle:@"Dismiss" otherButtonTitles:nil];
 	
 	[alert show];
+    [alert release];
 }
 
 -(void) cartContentsReceived:(NSDictionary *)cart forRequest:(NSString *)connectionIdentifier {
