@@ -124,8 +124,46 @@
 -(void) imageReceived:(UIImage *)image forRequest:(NSString *)connectionIdentifier {
 	ProductCell *cell = (ProductCell *)[self.tableView cellForRowAtIndexPath:[imageIndexPaths objectForKey:connectionIdentifier]];
 	
-	[cell.productImage setImage:image];
+    CGFloat target = 64;
+    
+    CGImageRef oldImage = [image CGImage];
+    CGFloat imageWidth = (CGFloat)CGImageGetWidth(oldImage);
+    CGFloat imageHeight = (CGFloat)CGImageGetHeight(oldImage);
+    
+    CGFloat widthFactor = target / imageWidth;
+    CGFloat heightFactor = target / imageHeight;
+    
+    CGFloat factor = 1.0;
+    
+    if (widthFactor > 1.0 && heightFactor > 1.0) {
+        factor = 1.0;
+    }
+    else {
+        if (widthFactor >= heightFactor) {
+            factor = widthFactor;
+        }
+        else {
+            factor = heightFactor;
+        }
+    }
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef imageContext = CGBitmapContextCreate(NULL, imageWidth, imageHeight, 8, 4 * imageWidth, colorSpace, kCGImageAlphaPremultipliedFirst);
+    CGContextDrawImage(imageContext, CGRectMake(0, 0, imageWidth, imageHeight), oldImage);
+    CGContextScaleCTM(imageContext, imageWidth * factor, imageHeight * factor);
+    CGImageRef newImage = CGBitmapContextCreateImage(imageContext);
+    
+    CGColorSpaceRelease(colorSpace);
+    CGContextRelease(imageContext);
+    
+    UIImage* resizedImage = [[UIImage alloc] initWithCGImage:newImage];
+    
 	
+    [cell.productImage setImage:resizedImage];
+	
+    CGImageRelease(newImage);
+    [resizedImage release];
+    
 	[imageIndexPaths removeObjectForKey:connectionIdentifier];
 }
 

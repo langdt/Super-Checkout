@@ -9,6 +9,10 @@
 #import "ShoppingCartViewController.h"
 #import "ProductCell.h"
 
+@interface ShoppingCartViewController(PrivateMethods)
+-(void)removeItemFromCart:(NSDictionary*)item;
+@end
+
 @implementation ShoppingCartViewController
 @synthesize checkoutButtonView;
 @synthesize delegate;
@@ -163,6 +167,12 @@
         NSDictionary *item = [[shoppingCart objectForKey:@"items"] objectAtIndex:[indexPath row]];
 		
 		[apiEngine removeProductFromCart:[item objectForKey:@"id"] withQuantity:[item objectForKey:@"quantity"]];
+        [self removeItemFromCart:item];
+        
+        [tableView beginUpdates];
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                         withRowAnimation:UITableViewRowAnimationRight];
+        [tableView endUpdates];
     }   
 }
 
@@ -224,5 +234,21 @@
 
 - (IBAction)checkoutPressed:(id)sender {
 	[apiEngine checkout];
+}
+
+#pragma mark - Private Methods
+-(void)removeItemFromCart:(NSDictionary *)itemToRemove{
+    NSMutableArray* newItemsArray = [NSMutableArray array];
+    
+    for (NSDictionary* item in [shoppingCart objectForKey:@"items"]) {
+        if ([item valueForKey:@"id"] == [itemToRemove valueForKey:@"id"]) {
+            continue;
+        }
+        [newItemsArray addObject:item];
+    }
+    
+    NSMutableDictionary* newCart = [NSMutableDictionary dictionaryWithDictionary:shoppingCart];
+    [newCart setValue:newItemsArray forKey:@"items"];
+    shoppingCart = newCart;
 }
 @end
